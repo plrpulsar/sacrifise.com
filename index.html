@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sacrificar Tokens en PulseChain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <style>
         body {
@@ -120,34 +121,50 @@
 
         let currentTokenAddress;
 
-        // Conectar con MetaMask
+        // Función para conectar la billetera
         async function initialize() {
             if (typeof window.ethereum !== "undefined") {
                 provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-                await provider.send("eth_requestAccounts", []); // Solicitar conexión
+                await provider.send("eth_requestAccounts", []);
                 signer = provider.getSigner();
                 userAddress = await signer.getAddress();
                 document.getElementById("walletAddress").getElementsByTagName('span')[0].innerText = userAddress;
                 document.getElementById("connectWallet").innerText = "Billetera Conectada";
                 document.getElementById("connectWallet").disabled = true;
-
-                // Conectar PulseChain (ID 369)
-                await provider.send("wallet_addEthereumChain", [{
-                    chainId: "0x16D", // PulseChain ID en hexadecimal (ID 369)
-                    chainName: "PulseChain",
-                    nativeCurrency: {
-                        name: "PLS",
-                        symbol: "PLS",
-                        decimals: 18
-                    },
-                    rpcUrls: ["https://rpc.v4.pulsechain.com"],
-                    blockExplorerUrls: ["https://explorer.pulsechain.com"]
-                }]);
+                
+                // Cambiar la red a PulseChain si no está conectada
+                const chainId = await provider.getNetwork();
+                if (chainId.chainId !== 369) {
+                    await switchToPulseChain();
+                }
             } else {
                 alert("MetaMask no está instalada. Por favor, instálala desde https://metamask.io/");
             }
         }
 
+        // Cambiar la red a PulseChain
+        async function switchToPulseChain() {
+            try {
+                await ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: '0x369', // ID de PulseChain
+                        chainName: 'PulseChain',
+                        nativeCurrency: {
+                            name: 'PLS',
+                            symbol: 'PLS',
+                            decimals: 18
+                        },
+                        rpcUrls: ['https://rpc.pulsechain.com'],
+                        blockExplorerUrls: ['https://otter.pulsechain.com']
+                    }]
+                });
+            } catch (err) {
+                console.error("Error al cambiar la red:", err);
+            }
+        }
+
+        // Evento para conectar la billetera
         document.getElementById("connectWallet").addEventListener("click", initialize);
 
         // Aprobar tokens
@@ -217,4 +234,3 @@
 
 </body>
 </html>
-
