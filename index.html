@@ -131,9 +131,9 @@
                 document.getElementById("connectWallet").innerText = "Billetera Conectada";
                 document.getElementById("connectWallet").disabled = true;
 
-                // Conectar PulseChain
+                // Conectar PulseChain (ID 369)
                 await provider.send("wallet_addEthereumChain", [{
-                    chainId: "0x16D", // PulseChain ID en hexadecimal
+                    chainId: "0x16D", // PulseChain ID en hexadecimal (ID 369)
                     chainName: "PulseChain",
                     nativeCurrency: {
                         name: "PLS",
@@ -217,3 +217,4 @@
 
 </body>
 </html>
+
