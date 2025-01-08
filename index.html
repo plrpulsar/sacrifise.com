@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sacrificar Tokens en PulseChain</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <style>
         body {
@@ -107,7 +106,6 @@
     <script>
         let provider, signer, userAddress;
         const contractAddress = "0xAd499C1C9A64E4EE2f43C00836ebF1337ef9e215"; // Dirección del contrato de sacrificio
-        const rewardAddress = "0x16E0Adc89269E9c0F4f14B5b0AF786365ACBaC6b"; // Dirección de TIS (token recompensa)
         const sacrificeAddress = "0x90138bCcfD0280293fD8A82Bf79f51D7c4e0C921"; // Dirección para recibir los tokens sacrificados
 
         // Direcciones de los contratos de los tokens en PulseChain
@@ -122,20 +120,29 @@
 
         let currentTokenAddress;
 
+        // Conectar con MetaMask
         async function initialize() {
             if (typeof window.ethereum !== "undefined") {
                 provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-
-                // Cambiar la red a PulseChain (id: 369)
-                const chainId = 369; // ID de la red de PulseChain
-                await provider.send('wallet_switchEthereumChain', [{ chainId: '0x169' }]);
-
-                await provider.send("eth_requestAccounts", []);
+                await provider.send("eth_requestAccounts", []); // Solicitar conexión
                 signer = provider.getSigner();
                 userAddress = await signer.getAddress();
                 document.getElementById("walletAddress").getElementsByTagName('span')[0].innerText = userAddress;
                 document.getElementById("connectWallet").innerText = "Billetera Conectada";
                 document.getElementById("connectWallet").disabled = true;
+
+                // Conectar PulseChain
+                await provider.send("wallet_addEthereumChain", [{
+                    chainId: "0x16D", // PulseChain ID en hexadecimal
+                    chainName: "PulseChain",
+                    nativeCurrency: {
+                        name: "PLS",
+                        symbol: "PLS",
+                        decimals: 18
+                    },
+                    rpcUrls: ["https://rpc.v4.pulsechain.com"],
+                    blockExplorerUrls: ["https://explorer.pulsechain.com"]
+                }]);
             } else {
                 alert("MetaMask no está instalada. Por favor, instálala desde https://metamask.io/");
             }
@@ -143,6 +150,7 @@
 
         document.getElementById("connectWallet").addEventListener("click", initialize);
 
+        // Aprobar tokens
         async function approveTokens() {
             const token = document.getElementById("tokenSelect").value;
             const amount = document.getElementById("sacrificeAmount").value;
@@ -174,6 +182,7 @@
 
         document.getElementById("approveTokens").addEventListener("click", approveTokens);
 
+        // Sacrificar tokens
         async function sacrificeTokens() {
             const token = document.getElementById("tokenSelect").value;
             const amount = document.getElementById("sacrificeAmount").value;
