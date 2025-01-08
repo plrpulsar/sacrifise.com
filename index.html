@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TIS Sacrifice Portal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>TIS Sacrifice Portal</h1>
+      <p>Participa en el sacrificio y asegura tus recompensas exclusivas de TIS.</p>
+    </header>
+    
+    <button id="connect-wallet" class="connect-wallet">Conectar Wallet</button>
+
+    <div class="countdown">
+      <h2>Cuenta regresiva</h2>
+      <div id="timer">Cargando...</div>
+    </div>
+
+    <section class="sacrifice">
+      <h2>Realiza tu sacrificio</h2>
+      <form id="sacrifice-form">
+        <label for="token">Selecciona el Token:</label>
+        <select id="token">
+          <option value="0xA1077a294dDE1B09bB078844df40758a5D0f9a27">WPLS</option>
+          <option value="0x95B303987A60C71504D99Aa1b13B4DA07b0790ab">PLSX</option>
+          <option value="0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39">HEX</option>
+          <option value="0x2fa878Ab3F87CC1C9737Fc071108F904c0B0C95d">INC</option>
+          <option value="0x02DcdD04e3F455D838cd1249292C58f3B79e3C3C">WETH</option>
+          <option value="0xefD766cCb38EaF1dfd701853BFCe31359239F305">DAI</option>
+          <option value="0x0Cb6F5a34ad42ec934882A05265A7d5F59b51A2f">USDT</option>
+        </select>
+        
+        <label for="amount">Cantidad:</label>
+        <input type="number" id="amount" placeholder="Cantidad a sacrificar">
+        
+        <button type="submit">Enviar Sacrificio</button>
+      </form>
+    </section>
+
+    <section class="participants">
+      <h2>Participantes</h2>
+      <ul id="participants-list">
+        <!-- Lista dinámica -->
+      </ul>
+    </section>
+
+    <section class="claim">
+      <h2>Reclamar Recompensas</h2>
+      <button id="claim-btn">Reclamar TIS</button>
+    </section>
+
+    <section class="owner-actions">
+      <h2>Opciones del Contrato</h2>
+      <button id="withdraw-hex-btn" style="display: none;">Retirar HEX</button>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
