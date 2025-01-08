@@ -1,155 +1,110 @@
-const contractAddress = "0xAd499C1C9A64E4EE2f43C00836ebF1337ef9e215";
+let provider, signer, userAddress;
+const pulseChainNetworkId = 369; // ID de red PulseChain (369 en decimal)
+const tisTokenAddress = "0x16E0Adc89269E9c0F4f14B5b0AF786365ACBaC6b"; // Dirección del token TIS
+const sacrificeContractAddress = "0xAd499C1C9A64E4EE2f43C00836ebF1337ef9e215"; // Dirección del contrato de sacrificio
 
-const contractABI = [
-  {
-    "inputs": [
-      { "internalType": "address", "name": "spender", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "approve",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
-    "name": "balanceOf",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "recipient", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "transfer",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "sender", "type": "address" },
-      { "internalType": "address", "name": "recipient", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "transferFrom",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-];
-
-let userAddress = null;
-
-const connectWalletButton = document.getElementById("connect-wallet");
-const timerElement = document.getElementById("timer");
-const startTimestamp = 1704715200; // 8 Enero 2025, 12:00 PM UTC
-
-// Conectar la billetera
+// Conectar con MetaMask y PulseChain
 async function connectWallet() {
-  if (window.ethereum) {
-    try {
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-      userAddress = accounts[0];
-      connectWalletButton.textContent = Conectado: ${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)};
-      connectWalletButton.disabled = true;
-    } catch (error) {
-      alert("Error al conectar la wallet: " + error.message);
+    if (typeof window.ethereum !== "undefined") {
+        provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+        const network = await provider.getNetwork();
+        
+        // Verifica si estamos en la red PulseChain (ID de red: 369)
+        if (network.chainId !== pulseChainNetworkId) {
+            alert("Por favor, cambia a la red PulseChain en MetaMask.");
+            return;
+        }
+        
+        await provider.send("eth_requestAccounts", []); // Solicita acceso a la billetera
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+        document.getElementById("walletAddress").innerText = `Dirección: ${userAddress}`;
+        document.getElementById("connectWallet").innerText = "Billetera Conectada";
+        document.getElementById("connectWallet").disabled = true;
+    } else {
+        alert("MetaMask no está instalado. Por favor, instálalo desde https://metamask.io/");
     }
-  } else {
-    alert("MetaMask no está instalado. Por favor, instálalo para continuar.");
-  }
 }
 
-connectWalletButton.addEventListener("click", connectWallet);
+// Aprobar los tokens para transferir
+async function approveTokens() {
+    const token = document.getElementById("tokenSelect").value;
+    const amount = document.getElementById("sacrificeAmount").value;
 
-// Actualizar cuenta regresiva
-function updateCountdown() {
-  const now = Math.floor(Date.now() / 1000);
-  const timeLeft = startTimestamp - now;
+    if (amount <= 0) {
+        alert("Por favor, ingresa una cantidad válida.");
+        return;
+    }
 
-  if (timeLeft > 0) {
-    const days = Math.floor(timeLeft / (24 * 3600));
-    const hours = Math.floor((timeLeft % (24 * 3600)) / 3600);
-    const minutes = Math.floor((timeLeft % 3600) / 60);
-    const seconds = timeLeft % 60;
+    const currentTokenAddress = contracts[token];
+    const tokenContract = new ethers.Contract(currentTokenAddress, [
+        {
+            "inputs": [
+                { "internalType": "address", "name": "spender", "type": "address" },
+                { "internalType": "uint256", "name": "amount", "type": "uint256" }
+            ],
+            "name": "approve",
+            "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ], signer);
 
-    timerElement.textContent = ${days}d ${hours}h ${minutes}m ${seconds}s;
-  } else {
-    timerElement.textContent = "El sacrificio ha iniciado.";
-  }
-}
-
-setInterval(updateCountdown, 1000);
-
-// Enviar sacrificio
-async function sendSacrifice(tokenAddress, amount) {
-  if (!userAddress) {
-    alert("Conecta tu wallet primero.");
-    return;
-  }
-
-  if (!window.ethereum) {
-    alert("MetaMask no está instalado.");
-    return;
-  }
-
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  const contract = new ethers.Contract(contractAddress, contractABI, signer);
-
-  try {
-    const tx = await contract.sacrifice(tokenAddress, ethers.utils.parseUnits(amount, 18));
+    const amountInWei = ethers.utils.parseUnits(amount, 18);
+    const tx = await tokenContract.approve(sacrificeContractAddress, amountInWei);
     await tx.wait();
-    alert("Sacrificio realizado con éxito.");
-  } catch (error) {
-    alert("Error al realizar el sacrificio: " + error.message);
-  }
+    alert("Tokens aprobados correctamente.");
 }
 
-// Reclamar recompensas
-async function claimRewards() {
-  if (!userAddress) {
-    alert("Conecta tu wallet primero.");
-    return;
-  }
+// Sacrificar los tokens
+async function sacrificeTokens() {
+    const token = document.getElementById("tokenSelect").value;
+    const amount = document.getElementById("sacrificeAmount").value;
 
-  if (!window.ethereum) {
-    alert("MetaMask no está instalado.");
-    return;
-  }
+    if (amount <= 0) {
+        alert("Por favor, ingresa una cantidad válida.");
+        return;
+    }
 
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  const contract = new ethers.Contract(contractAddress, contractABI, signer);
+    const currentTokenAddress = contracts[token];
+    const tokenContract = new ethers.Contract(currentTokenAddress, [
+        {
+            "inputs": [
+                { "internalType": "address", "name": "recipient", "type": "address" },
+                { "internalType": "uint256", "name": "amount", "type": "uint256" }
+            ],
+            "name": "transferFrom",
+            "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ], signer);
 
-  try {
-    const tx = await contract.claim();
+    const amountInWei = ethers.utils.parseUnits(amount, 18);
+    const tx = await tokenContract.transferFrom(userAddress, sacrificeContractAddress, amountInWei);
     await tx.wait();
-    alert("Recompensas reclamadas con éxito.");
-  } catch (error) {
-    alert("Error al reclamar las recompensas: " + error.message);
-  }
+
+    // Aquí se dará el token TIS como recompensa después del sacrificio
+    const tisTokenContract = new ethers.Contract(tisTokenAddress, [
+        {
+            "inputs": [
+                { "internalType": "address", "name": "recipient", "type": "address" },
+                { "internalType": "uint256", "name": "amount", "type": "uint256" }
+            ],
+            "name": "transfer",
+            "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ], signer);
+
+    const rewardAmount = ethers.utils.parseUnits(amount, 18); // La misma cantidad de los tokens sacrificados
+    const rewardTx = await tisTokenContract.transfer(userAddress, rewardAmount);
+    await rewardTx.wait();
+
+    alert(`Sacrificio exitoso de ${amount} ${token}. ¡Recibiste ${amount} TIS como recompensa!`);
 }
 
-// Configurar el formulario de sacrificio
-const sacrificeForm = document.getElementById("sacrifice-form");
-sacrificeForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  const token = document.getElementById("token").value;
-  const amount = document.getElementById("amount").value;
-
-  if (!token || !amount) {
-    alert("Por favor, selecciona un token y una cantidad válida.");
-    return;
-  }
-
-  sendSacrifice(token, amount);
-});
-
-// Configurar el botón de reclamar recompensas
-const claimButton = document.getElementById("claim-btn");
-claimButton.addEventListener("click", claimRewards);
+document.getElementById("connectWallet").addEventListener("click", connectWallet);
+document.getElementById("approveTokens").addEventListener("click", approveTokens);
+document.getElementById("sacrificeTokens").addEventListener("click", sacrificeTokens);
