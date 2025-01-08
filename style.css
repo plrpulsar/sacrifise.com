@@ -1,0 +1,64 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  background: radial-gradient(circle, #0a0f2c, #010411);
+  color: #e0e0e0;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 2.8rem;
+  color: #00f0ff;
+  text-shadow: 0 0 15px #00f0ff, 0 0 30px #0077ff;
+}
+
+header p {
+  font-size: 1.3rem;
+  color: #99e6ff;
+}
+
+.connect-wallet {
+  margin-top: 20px;
+  background: #00ff88;
+  color: #fff;
+  font-size: 1.2rem;
+  padding: 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 0 20px #00ff88;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.connect-wallet:hover {
+  background: #00cc66;
+  transform: translateY(-2px);
+}
+
+button {
+  background: #00c3ff;
+  color: #fff;
+  font-size: 1rem;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+button:hover {
+  background: #0077ff;
+}
+
+#timer {
+  font-size: 2rem;
+  color: #00f0ff;
+}
