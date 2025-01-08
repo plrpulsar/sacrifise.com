@@ -3,16 +3,41 @@ const pulseChainNetworkId = 369; // ID de red PulseChain (369 en decimal)
 const tisTokenAddress = "0x16E0Adc89269E9c0F4f14B5b0AF786365ACBaC6b"; // Dirección del token TIS
 const sacrificeContractAddress = "0xAd499C1C9A64E4EE2f43C00836ebF1337ef9e215"; // Dirección del contrato de sacrificio
 
+// Direcciones de los contratos de los tokens en PulseChain
+const contracts = {
+    "INC": "0x8fa8c7ed3fa85c129b6ca3fa2cf0294b39c1b580",
+    "HEX": "0xD2f9dF2e1e1c3b3b128D4cDe6b39D42F98e1a7C0",
+    "WETH": "0x0B6e3A1D70b9F458742fD5A41570e529caE31bC2",
+    "USDT": "0x2348f40c25609b7e9a079b29293edfe9b38d06a9",
+    "PLS": "0x00e9e5db68b4385de66a33b68d30b079bc4a3ff2",
+    "WPLS": "0x338ff3a1b2776c8bbbd8f1c4d63c64dd1f4287d3"
+};
+
 // Conectar con MetaMask y PulseChain
 async function connectWallet() {
     if (typeof window.ethereum !== "undefined") {
         provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-        const network = await provider.getNetwork();
         
+        const network = await provider.getNetwork();
+
         // Verifica si estamos en la red PulseChain (ID de red: 369)
         if (network.chainId !== pulseChainNetworkId) {
-            alert("Por favor, cambia a la red PulseChain en MetaMask.");
-            return;
+            try {
+                await provider.send('wallet_addEthereumChain', [{
+                    chainId: '0x171', // 369 en hexadecimal
+                    chainName: 'PulseChain',
+                    rpcUrls: ['https://rpc.v2.testnet.pulsechain.com'],
+                    nativeCurrency: {
+                        name: 'PLS',
+                        symbol: 'PLS',
+                        decimals: 18
+                    },
+                    blockExplorerUrls: ['https://scan.pulsechain.com']
+                }]);
+            } catch (error) {
+                alert("No se pudo cambiar a PulseChain. Asegúrate de que MetaMask esté instalado y configurado correctamente.");
+                return;
+            }
         }
         
         await provider.send("eth_requestAccounts", []); // Solicita acceso a la billetera
