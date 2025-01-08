@@ -24,24 +24,6 @@ header p {
   color: #99e6ff;
 }
 
-.connect-wallet {
-  margin-top: 20px;
-  background: #00ff88;
-  color: #fff;
-  font-size: 1.2rem;
-  padding: 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 0 20px #00ff88;
-  transition: background 0.3s, transform 0.2s;
-}
-
-.connect-wallet:hover {
-  background: #00cc66;
-  transform: translateY(-2px);
-}
-
 button {
   background: #00c3ff;
   color: #fff;
@@ -56,9 +38,4 @@ button {
 
 button:hover {
   background: #0077ff;
-}
-
-#timer {
-  font-size: 2rem;
-  color: #00f0ff;
 }
