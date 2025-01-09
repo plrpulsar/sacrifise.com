@@ -106,7 +106,6 @@
 <body>
     <div class="container">
         <h1>TIS Sacrifice</h1>
-        <p id="countdown">El sacrificio comienza el 1 de febrero de 2025</p>
 
         <button id="connectWallet">Conectar Billetera</button>
         <p id="walletAddress">Dirección: <span>Desconocido</span></p>
@@ -134,6 +133,8 @@
         <button id="claimTIS">Reclamar TIS</button>
         <p id="claimStatus">Estado: Aún no has reclamado tus TIS.</p>
 
+        <p id="countdown">Puedes reclamar TIS en 25 días.</p>
+
         <table>
             <thead>
                 <tr>
@@ -155,29 +156,6 @@
         const ABI = [
             // Reemplazar con el ABI completo del contrato
         ];
-
-        // Countdown
-        const countdownElement = document.getElementById("countdown");
-        const targetDate = new Date("2025-02-01T00:00:00").getTime();
-
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-
-            if (distance < 0) {
-                countdownElement.textContent = "¡El sacrificio está activo!";
-                return;
-            }
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            countdownElement.textContent = `Faltan ${days}d ${hours}h ${minutes}m ${seconds}s para iniciar.`;
-        }
-
-        setInterval(updateCountdown, 1000);
 
         // Wallet and sacrifice functionality
         let provider, signer, userAddress;
@@ -278,3 +256,4 @@
     </script>
 </body>
 </html>
+
