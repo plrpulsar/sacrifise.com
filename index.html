@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sacrificar Tokens en PulseChain</title>
+    <title>TIS Sacrifice</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <style>
@@ -14,72 +14,100 @@
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
         }
+
         .container {
             text-align: center;
-            padding: 20px;
             background-color: #1a1a1a;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-            width: 400px;
-            margin-bottom: 20px;
+            padding: 20px;
+            margin: 20px;
+            width: 90%;
+            max-width: 800px;
         }
+
         h1 {
-            color: #9c27b0;
+            color: #00ff7f;
             font-size: 2.5em;
         }
+
         p, label {
             font-size: 1.2em;
-            margin-top: 10px;
-            margin-bottom: 20px;
+            margin: 10px 0;
         }
+
         button {
-            padding: 15px 25px;
+            padding: 10px 20px;
             font-size: 1em;
-            background-color: #9c27b0;
-            color: white;
+            background-color: #00ff7f;
+            color: black;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             margin: 10px;
             transition: background-color 0.3s;
         }
+
         button:hover {
-            background-color: #7b1fa2;
+            background-color: #00cc66;
         }
+
         input[type="number"] {
             width: 80%;
             padding: 10px;
             margin: 10px 0;
-            border: 1px solid #9c27b0;
+            border: 1px solid #00ff7f;
             border-radius: 5px;
             background-color: #333;
             color: white;
-        }
-        .info {
-            margin-top: 10px;
-            font-size: 1.1em;
-            color: #bb86fc;
         }
 
         select {
             padding: 10px;
             background-color: #333;
             color: white;
-            border: 1px solid #9c27b0;
+            border: 1px solid #00ff7f;
             border-radius: 5px;
-            margin-top: 10px;
+            margin: 10px 0;
+        }
+
+        #countdown {
+            font-size: 1.5em;
+            color: #00ff7f;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #00ff7f;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #00cc66;
+            color: black;
         }
     </style>
 </head>
 <body>
-
     <div class="container">
         <h1>TIS Sacrifice</h1>
+        <p id="countdown">El sacrificio comienza el 1 de febrero de 2025</p>
+
         <button id="connectWallet">Conectar Billetera</button>
         <p id="walletAddress">Dirección: <span>Desconocido</span></p>
 
@@ -87,112 +115,106 @@
 
         <p><strong>Selecciona el token que sacrificarás:</strong></p>
         <select id="tokenSelect">
-            <option value="PLS">PLS</option>  <!-- Solo PLS para el sacrificio -->
+            <option value="PLS">PLS</option>
+            <option value="WPLS">WPLS</option>
+            <option value="INC">INC</option>
+            <option value="HEX">HEX</option>
+            <option value="WETH">WETH</option>
+            <option value="USDT">USDT</option>
         </select>
 
         <p><strong>Introduce la cantidad a sacrificar:</strong></p>
         <input type="number" id="sacrificeAmount" placeholder="Cantidad a sacrificar">
 
-        <button id="approveTokens">Aprobar PLS</button>
-        <button id="sacrificeTokens">Sacrificar PLS</button>
-        
-        <div id="counter" class="info">Transacciones: 0</div>
+        <button id="approveTokens">Aprobar Tokens</button>
+        <button id="sacrificeTokens">Sacrificar Tokens</button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Token</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody id="sacrificeTable">
+                <tr>
+                    <td colspan="3">Aún no hay sacrificios.</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <script>
+        // Countdown
+        const countdownElement = document.getElementById("countdown");
+        const targetDate = new Date("2025-02-01T00:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                countdownElement.textContent = "¡El sacrificio está activo!";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            countdownElement.textContent = `Faltan ${days}d ${hours}h ${minutes}m ${seconds}s para iniciar.`;
+        }
+
+        setInterval(updateCountdown, 1000);
+
+        // Wallet and sacrifice functionality
         let provider, signer, userAddress;
-        const contractAddress = "0xAd499C1C9A64E4EE2f43C00836ebF1337ef9e215"; // Dirección del contrato de sacrificio
-        const sacrificeAddress = "0x90138bCcfD0280293fD8A82Bf79f51D7c4e0C921"; // Dirección para recibir los tokens sacrificados
 
-        // Dirección del contrato de PLS en PulseChain (no es ERC20, por lo que no necesitamos "approve")
-        const plsContractAddress = "0x00e9e5db68b4385de66a33b68d30b079bc4a3ff2";
-
-        let currentTokenAddress;
-
-        // Función para conectar la billetera
-        async function initialize() {
+        async function connectWallet() {
             if (typeof window.ethereum !== "undefined") {
-                provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+                provider = new ethers.providers.Web3Provider(window.ethereum);
                 await provider.send("eth_requestAccounts", []);
                 signer = provider.getSigner();
                 userAddress = await signer.getAddress();
-                document.getElementById("walletAddress").getElementsByTagName('span')[0].innerText = userAddress;
-                document.getElementById("connectWallet").innerText = "Billetera Conectada";
+                document.getElementById("walletAddress").querySelector("span").textContent = userAddress;
+                document.getElementById("connectWallet").textContent = "Billetera Conectada";
                 document.getElementById("connectWallet").disabled = true;
-                
-                // Cambiar la red a PulseChain si no está conectada
-                const chainId = await provider.getNetwork();
-                if (chainId.chainId !== 369) {
-                    await switchToPulseChain();
-                }
             } else {
                 alert("MetaMask no está instalada. Por favor, instálala desde https://metamask.io/");
             }
         }
 
-        // Cambiar la red a PulseChain
-        async function switchToPulseChain() {
-            try {
-                await ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{
-                        chainId: '0x369', // ID de PulseChain
-                        chainName: 'PulseChain',
-                        nativeCurrency: {
-                            name: 'PLS',
-                            symbol: 'PLS',
-                            decimals: 18
-                        },
-                        rpcUrls: ['https://rpc.pulsechain.com'],
-                        blockExplorerUrls: ['https://otter.pulsechain.com']
-                    }]
-                });
-            } catch (err) {
-                console.error("Error al cambiar la red:", err);
-            }
-        }
+        document.getElementById("connectWallet").addEventListener("click", connectWallet);
 
-        // Evento para conectar la billetera
-        document.getElementById("connectWallet").addEventListener("click", initialize);
+        // Placeholder functions for approve and sacrifice
+        document.getElementById("approveTokens").addEventListener("click", () => {
+            alert("Función de aprobación en desarrollo.");
+        });
 
-        // Aprobar tokens (PLS no requiere aprobación, ya que es nativo)
-        async function approveTokens() {
-            const amount = document.getElementById("sacrificeAmount").value;
+        document.getElementById("sacrificeTokens").addEventListener("click", () => {
+            alert("Función de sacrificio en desarrollo.");
+        });
 
-            if (amount <= 0) {
-                alert("Por favor, ingresa una cantidad válida.");
-                return;
+        // Add sacrifice to table
+        function addSacrifice(user, token, amount) {
+            const table = document.getElementById("sacrificeTable");
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${user}</td>
+                <td>${token}</td>
+                <td>${amount}</td>
+            `;
+
+            if (table.querySelector("tr td[colspan]") !== null) {
+                table.innerHTML = ""; // Clear placeholder
             }
 
-            // No es necesario aprobar PLS, ya que no es un token ERC20. Procedemos directamente con el sacrificio.
-            alert("PLS aprobado automáticamente para el sacrificio.");
+            table.appendChild(row);
         }
-
-        document.getElementById("approveTokens").addEventListener("click", approveTokens);
-
-        // Sacrificar tokens PLS
-        async function sacrificeTokens() {
-            const amount = document.getElementById("sacrificeAmount").value;
-
-            if (amount <= 0) {
-                alert("Por favor, ingresa una cantidad válida.");
-                return;
-            }
-
-            const amountInWei = ethers.utils.parseUnits(amount, 18);
-
-            // Enviar PLS directamente (ya que no es un token ERC20)
-            const tx = await signer.sendTransaction({
-                to: sacrificeAddress,
-                value: amountInWei,
-            });
-
-            await tx.wait();
-            alert(`Sacrificio exitoso de ${amount} PLS. ¡Recibiste TIS!`);
-        }
-
-        document.getElementById("sacrificeTokens").addEventListener("click", sacrificeTokens);
     </script>
-
 </body>
 </html>
+
