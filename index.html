@@ -129,6 +129,11 @@
         <button id="approveTokens">Aprobar Tokens</button>
         <button id="sacrificeTokens">Sacrificar Tokens</button>
 
+        <hr>
+
+        <button id="claimTIS">Reclamar TIS</button>
+        <p id="claimStatus">Estado: Aún no has reclamado tus TIS.</p>
+
         <table>
             <thead>
                 <tr>
@@ -146,6 +151,11 @@
     </div>
 
     <script>
+        const CONTRACT_ADDRESS = "0xAd499C1C9A64E4EE2f43C00836ebF1337ef9e215";
+        const ABI = [
+            // Reemplazar con el ABI completo del contrato
+        ];
+
         // Countdown
         const countdownElement = document.getElementById("countdown");
         const targetDate = new Date("2025-02-01T00:00:00").getTime();
@@ -188,13 +198,64 @@
 
         document.getElementById("connectWallet").addEventListener("click", connectWallet);
 
-        // Placeholder functions for approve and sacrifice
-        document.getElementById("approveTokens").addEventListener("click", () => {
+        async function approveTokens() {
             alert("Función de aprobación en desarrollo.");
-        });
+        }
 
-        document.getElementById("sacrificeTokens").addEventListener("click", () => {
-            alert("Función de sacrificio en desarrollo.");
+        async function sacrificeTokens() {
+            if (!userAddress) {
+                alert("Por favor, conecta tu billetera primero.");
+                return;
+            }
+
+            const amount = document.getElementById("sacrificeAmount").value;
+            const token = document.getElementById("tokenSelect").value;
+
+            if (!amount || isNaN(amount) || amount <= 0) {
+                alert("Por favor, introduce una cantidad válida.");
+                return;
+            }
+
+            try {
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+                const tx = await contract.sacrificeTokens(ethers.utils.parseUnits(amount, 18));
+                await tx.wait();
+
+                alert("¡Sacrificio realizado con éxito!");
+                addSacrifice(userAddress, token, amount);
+            } catch (error) {
+                console.error(error);
+                alert("Error al realizar el sacrificio.");
+            }
+        }
+
+        document.getElementById("sacrificeTokens").addEventListener("click", sacrificeTokens);
+
+        // Claim TIS logic
+        document.getElementById("claimTIS").addEventListener("click", async () => {
+            if (!userAddress) {
+                alert("Por favor, conecta tu billetera primero.");
+                return;
+            }
+
+            const tableRows = document.querySelectorAll("#sacrificeTable tr");
+            let totalPLS = 0;
+
+            tableRows.forEach(row => {
+                const cells = row.querySelectorAll("td");
+                if (cells.length > 0 && cells[1].textContent === "PLS") {
+                    totalPLS += parseFloat(cells[2].textContent);
+                }
+            });
+
+            const tisToClaim = Math.floor(totalPLS / 100);
+
+            if (tisToClaim > 0) {
+                document.getElementById("claimStatus").textContent = `Has reclamado ${tisToClaim} TIS.`;
+                alert(`¡Reclamo exitoso! Has recibido ${tisToClaim} TIS.`);
+            } else {
+                alert("No tienes suficiente PLS sacrificado para reclamar TIS.");
+            }
         });
 
         // Add sacrifice to table
@@ -217,4 +278,3 @@
     </script>
 </body>
 </html>
-
