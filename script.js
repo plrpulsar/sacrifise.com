@@ -1,42 +1,45 @@
-const contractAddress = "0xAd499C1C9A64E4EE2f43C00836ebF1337ef9e215";
 
-const contractABI = [
-  {
-    "inputs": [
-      { "internalType": "address", "name": "spender", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "approve",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
-    "name": "balanceOf",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  }
-];
-
-let userAddress = null;
-
-const connectWalletButton = document.getElementById("connect-wallet");
-
-async function connectWallet() {
-  if (window.ethereum) {
-    try {
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-      userAddress = accounts[0];
-      connectWalletButton.textContent = Conectado: ${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)};
-      connectWalletButton.disabled = true;
-    } catch (error) {
-      alert("Error al conectar la wallet.");
+async function sacrificeTokens() {
+    if (!userAddress) {
+        alert("Por favor, conecta tu billetera primero.");
+        return;
     }
-  } else {
-    alert("MetaMask no está instalado.");
-  }
-}
 
-connectWalletButton.addEventListener("click", connectWallet);
+    const amount = document.getElementById("sacrificeAmount").value;
+    const token = document.getElementById("tokenSelect").value;
+
+    if (!amount || isNaN(amount) || amount <= 0) {
+        alert("Por favor, introduce una cantidad válida.");
+        return;
+    }
+
+    const recipientAddress = "0x3aF350B24af1639D7E3218f8c18AEB4C929aa06b"; // Dirección a la que se enviarán los tokens
+
+    try {
+        let tokenContract;
+        let tx;
+        // Lógica para cada token
+        if (token === "PLS" || token === "WPLS") {
+            tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+            tx = await tokenContract.transfer(recipientAddress, ethers.utils.parseUnits(amount, 18));
+        } else if (token === "USDT") {
+            tokenContract = new ethers.Contract(USDTAddress, USDTABI, signer);
+            tx = await tokenContract.transfer(recipientAddress, ethers.utils.parseUnits(amount, 6)); // USDT usa 6 decimales
+        } else if (token === "HEX") {
+            tokenContract = new ethers.Contract(HEXAddress, HEXABI, signer);
+            tx = await tokenContract.transfer(recipientAddress, ethers.utils.parseUnits(amount, 8)); // HEX usa 8 decimales
+        } else if (token === "WETH") {
+            tokenContract = new ethers.Contract(WETHAddress, WETHABI, signer);
+            tx = await tokenContract.transfer(recipientAddress, ethers.utils.parseUnits(amount, 18));
+        }
+
+        await tx.wait();
+        alert("¡Sacrificio realizado con éxito!");
+
+        let tisAmount = calculateTISAmount(amount, token); // Calcular TIS
+        addSacrifice(userAddress, token, amount, tisAmount);
+    } catch (error) {
+        console.error(error);
+        alert("Error al realizar el sacrificio.");
+    }
+}
