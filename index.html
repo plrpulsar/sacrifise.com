@@ -1,259 +1,256 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIS Sacrifice</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <style>
-        body {
-            background-color: #121212;
-            color: white;
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TIS Sacrifice Portal</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background: radial-gradient(circle, #0a0f2c, #010411);
+      color: #e0e0e0;
+      overflow-x: hidden;
+    }
 
-        .container {
-            text-align: center;
-            background-color: #1a1a1a;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            margin: 20px;
-            width: 90%;
-            max-width: 800px;
-        }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
 
-        h1 {
-            color: #00ff7f;
-            font-size: 2.5em;
-        }
+    header {
+      margin-bottom: 30px;
+    }
 
-        p, label {
-            font-size: 1.2em;
-            margin: 10px 0;
-        }
+    header h1 {
+      font-size: 2.8rem;
+      color: #00f0ff;
+      text-shadow: 0 0 15px #00f0ff, 0 0 30px #0077ff;
+    }
 
-        button {
-            padding: 10px 20px;
-            font-size: 1em;
-            background-color: #00ff7f;
-            color: black;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px;
-            transition: background-color 0.3s;
-        }
+    header p {
+      font-size: 1.3rem;
+      color: #99e6ff;
+    }
 
-        button:hover {
-            background-color: #00cc66;
-        }
+    .countdown {
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(15, 15, 40, 0.9);
+      border-radius: 15px;
+      box-shadow: 0 0 20px #00f0ff;
+    }
 
-        input[type="number"] {
-            width: 80%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #00ff7f;
-            border-radius: 5px;
-            background-color: #333;
-            color: white;
-        }
+    #timer {
+      font-size: 2.2rem;
+      color: #00f0ff;
+    }
 
-        select {
-            padding: 10px;
-            background-color: #333;
-            color: white;
-            border: 1px solid #00ff7f;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
+    section {
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(20, 20, 50, 0.9);
+      border-radius: 15px;
+      box-shadow: 0 0 15px #00c3ff;
+    }
 
-        #countdown {
-            font-size: 1.5em;
-            color: #00ff7f;
-            margin-top: 20px;
-        }
+    form label {
+      display: block;
+      margin: 10px 0 5px;
+      text-align: left;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+    form select, form input, form button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
 
-        table, th, td {
-            border: 1px solid #00ff7f;
-        }
+    form select, form input {
+      background: #0f1a3d;
+      color: #fff;
+      box-shadow: inset 0 0 10px #00c3ff;
+    }
 
-        th, td {
-            padding: 10px;
-            text-align: center;
-        }
+    form button {
+      background: #00c3ff;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 15px #0077ff;
+      transition: background 0.3s, transform 0.2s;
+    }
 
-        th {
-            background-color: #00cc66;
-            color: black;
-        }
-    </style>
+    form button:hover {
+      background: #0077ff;
+      transform: translateY(-2px);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    ul li {
+      margin: 10px 0;
+      padding: 10px;
+      background: #0f1a3d;
+      border-radius: 10px;
+      box-shadow: inset 0 0 10px #00c3ff;
+    }
+
+    .connect-wallet {
+      margin-top: 20px;
+      background: #00ff88;
+      color: #fff;
+      font-size: 1.2rem;
+      padding: 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ff88;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .connect-wallet:hover {
+      background: #00cc66;
+      transform: translateY(-2px);
+    }
+
+    button#claim-btn {
+      background: #00ff88;
+      color: #fff;
+      font-size: 1.2rem;
+      padding: 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ff88;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button#claim-btn:hover {
+      background: #00cc66;
+      transform: translateY(-2px);
+    }
+
+    button#withdraw-hex-btn {
+      background: #ff4dff;
+      color: #fff;
+      font-size: 1.2rem;
+      padding: 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #ff4dff;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button#withdraw-hex-btn:hover {
+      background: #cc00cc;
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>TIS Sacrifice</h1>
+  <div class="container">
+    <header>
+      <h1>TIS Sacrifice Portal</h1>
+      <p>Participa en el sacrificio y asegura tus recompensas exclusivas de TIS.</p>
+    </header>
+    
+    <button id="connect-wallet" class="connect-wallet">Conectar Wallet</button>
 
-        <button id="connectWallet">Conectar Billetera</button>
-        <p id="walletAddress">Dirección: <span>Desconocido</span></p>
-
-        <hr>
-
-        <p><strong>Selecciona el token que sacrificarás:</strong></p>
-        <select id="tokenSelect">
-            <option value="PLS">PLS</option>
-            <option value="WPLS">WPLS</option>
-            <option value="INC">INC</option>
-            <option value="HEX">HEX</option>
-            <option value="WETH">WETH</option>
-            <option value="USDT">USDT</option>
-        </select>
-
-        <p><strong>Introduce la cantidad a sacrificar:</strong></p>
-        <input type="number" id="sacrificeAmount" placeholder="Cantidad a sacrificar">
-
-        <button id="approveTokens">Aprobar Tokens</button>
-        <button id="sacrificeTokens">Sacrificar Tokens</button>
-
-        <hr>
-
-        <button id="claimTIS">Reclamar TIS</button>
-        <p id="claimStatus">Estado: Aún no has reclamado tus TIS.</p>
-
-        <p id="countdown">Puedes reclamar TIS en 25 días.</p>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Usuario</th>
-                    <th>Token</th>
-                    <th>Cantidad</th>
-                </tr>
-            </thead>
-            <tbody id="sacrificeTable">
-                <tr>
-                    <td colspan="3">Aún no hay sacrificios.</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="countdown">
+      <h2>Cuenta regresiva</h2>
+      <div id="timer">Cargando...</div>
     </div>
 
-    <script>
-        const CONTRACT_ADDRESS = "0xAd499C1C9A64E4EE2f43C00836ebF1337ef9e215";
-        const ABI = [
-            // Reemplazar con el ABI completo del contrato
-        ];
+    <section class="sacrifice">
+      <h2>Realiza tu sacrificio</h2>
+      <form id="sacrifice-form">
+        <label for="token">Selecciona el Token:</label>
+        <select id="token">
+          <option value="0xA1077a294dDE1B09bB078844df40758a5D0f9a27">WPLS</option>
+          <option value="0x95B303987A60C71504D99Aa1b13B4DA07b0790ab">PLSX</option>
+          <option value="0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39">HEX</option>
+          <option value="0x2fa878Ab3F87CC1C9737Fc071108F904c0B0C95d">INC</option>
+          <option value="0x02DcdD04e3F455D838cd1249292C58f3B79e3C3C">WETH</option>
+          <option value="0xefD766cCb38EaF1dfd701853BFCe31359239F305">DAI</option>
+          <option value="0x0Cb6F5a34ad42ec934882A05265A7d5F59b51A2f">USDT</option>
+        </select>
+        
+        <label for="amount">Cantidad:</label>
+        <input type="number" id="amount" placeholder="Cantidad a sacrificar">
+        
+        <button type="submit">Enviar Sacrificio</button>
+      </form>
+    </section>
 
-        // Wallet and sacrifice functionality
-        let provider, signer, userAddress;
+    <section class="participants">
+      <h2>Participantes</h2>
+      <ul id="participants-list">
+        <!-- Lista dinámica -->
+      </ul>
+    </section>
 
-        async function connectWallet() {
-            if (typeof window.ethereum !== "undefined") {
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                await provider.send("eth_requestAccounts", []);
-                signer = provider.getSigner();
-                userAddress = await signer.getAddress();
-                document.getElementById("walletAddress").querySelector("span").textContent = userAddress;
-                document.getElementById("connectWallet").textContent = "Billetera Conectada";
-                document.getElementById("connectWallet").disabled = true;
-            } else {
-                alert("MetaMask no está instalada. Por favor, instálala desde https://metamask.io/");
-            }
+    <section class="claim">
+      <h2>Reclamar Recompensas</h2>
+      <button id="claim-btn">Reclamar TIS</button>
+    </section>
+
+    <section class="owner-actions">
+      <h2>Opciones del Contrato</h2>
+      <button id="withdraw-hex-btn" style="display: none;">Retirar HEX</button>
+    </section>
+  </div>
+
+  <script>
+    const connectWalletButton = document.getElementById("connect-wallet");
+    const timerElement = document.getElementById("timer");
+    const startTimestamp = 1704715200; // 8 Enero 2025, 12:00 PM UTC
+
+    let userAddress = null;
+
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+          userAddress = accounts[0];
+          connectWalletButton.textContent = Conectado: ${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)};
+          connectWalletButton.disabled = true;
+        } catch (error) {
+          console.error("Error al conectar la wallet:", error);
         }
+      } else {
+        alert("MetaMask no está instalado. Por favor, instálalo para continuar.");
+      }
+    }
 
-        document.getElementById("connectWallet").addEventListener("click", connectWallet);
+    connectWalletButton.addEventListener("click", connectWallet);
 
-        async function approveTokens() {
-            alert("Función de aprobación en desarrollo.");
-        }
+    function updateCountdown() {
+      const now = Math.floor(Date.now() / 1000);
+      const timeLeft = startTimestamp - now;
 
-        async function sacrificeTokens() {
-            if (!userAddress) {
-                alert("Por favor, conecta tu billetera primero.");
-                return;
-            }
+      if (timeLeft > 0) {
+        const days = Math.floor(timeLeft / (24 * 3600));
+        const hours = Math.floor((timeLeft % (24 * 3600)) / 3600);
+        const minutes = Math.floor((timeLeft % 3600) / 60);
+        const seconds = timeLeft % 60;
 
-            const amount = document.getElementById("sacrificeAmount").value;
-            const token = document.getElementById("tokenSelect").value;
+        timerElement.textContent = ${days}d ${hours}h ${minutes}m ${seconds}s;
+      } else {
+        timerElement.textContent = "El sacrificio ha iniciado.";
+      }
+    }
 
-            if (!amount || isNaN(amount) || amount <= 0) {
-                alert("Por favor, introduce una cantidad válida.");
-                return;
-            }
-
-            try {
-                const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-                const tx = await contract.sacrificeTokens(ethers.utils.parseUnits(amount, 18));
-                await tx.wait();
-
-                alert("¡Sacrificio realizado con éxito!");
-                addSacrifice(userAddress, token, amount);
-            } catch (error) {
-                console.error(error);
-                alert("Error al realizar el sacrificio.");
-            }
-        }
-
-        document.getElementById("sacrificeTokens").addEventListener("click", sacrificeTokens);
-
-        // Claim TIS logic
-        document.getElementById("claimTIS").addEventListener("click", async () => {
-            if (!userAddress) {
-                alert("Por favor, conecta tu billetera primero.");
-                return;
-            }
-
-            const tableRows = document.querySelectorAll("#sacrificeTable tr");
-            let totalPLS = 0;
-
-            tableRows.forEach(row => {
-                const cells = row.querySelectorAll("td");
-                if (cells.length > 0 && cells[1].textContent === "PLS") {
-                    totalPLS += parseFloat(cells[2].textContent);
-                }
-            });
-
-            const tisToClaim = Math.floor(totalPLS / 100);
-
-            if (tisToClaim > 0) {
-                document.getElementById("claimStatus").textContent = `Has reclamado ${tisToClaim} TIS.`;
-                alert(`¡Reclamo exitoso! Has recibido ${tisToClaim} TIS.`);
-            } else {
-                alert("No tienes suficiente PLS sacrificado para reclamar TIS.");
-            }
-        });
-
-        // Add sacrifice to table
-        function addSacrifice(user, token, amount) {
-            const table = document.getElementById("sacrificeTable");
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-                <td>${user}</td>
-                <td>${token}</td>
-                <td>${amount}</td>
-            `;
-
-            if (table.querySelector("tr td[colspan]") !== null) {
-                table.innerHTML = ""; // Clear placeholder
-            }
-
-            table.appendChild(row);
-        }
-    </script>
+    setInterval(updateCountdown, 1000);
+  </script>
 </body>
 </html>
-
