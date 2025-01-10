@@ -162,7 +162,7 @@
   </div>
 
   <script>
-    const contractAddress = "0xAd499C1C9A64E4EE2f43C00836ebF1337ef9e215";
+    const contractAddress = "0xAd499C1C9A64E4EE2f43C00836ebF1337ef9e215"; // Dirección del contrato
     const contractABI = [
       {
         "inputs": [
@@ -192,11 +192,11 @@
 
     const connectWalletButton = document.getElementById("connect-wallet");
     const timerElement = document.getElementById("timer");
-    const startTimestamp = 1704715200; // 8 Enero 2025, 12:00 PM UTC
     const sacrificeForm = document.getElementById("sacrifice-form");
     const claimButton = document.getElementById("claim-btn");
     const withdrawHexButton = document.getElementById("withdraw-hex-btn");
 
+    const startTimestamp = 1704715200; // 8 Enero 2025, 12:00 PM UTC
     let userAddress = null;
 
     async function connectWallet() {
@@ -287,6 +287,7 @@
     }
 
     connectWalletButton.addEventListener("click", connectWallet);
+
     sacrificeForm.addEventListener("submit", (e) => {
       e.preventDefault();
       const token = document.getElementById("token").value;
@@ -299,6 +300,7 @@
 
       sendSacrifice(token, amount);
     });
+
     claimButton.addEventListener("click", claimRewards);
     withdrawHexButton.addEventListener("click", withdrawHex);
 
