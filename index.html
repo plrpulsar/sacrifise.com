@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+[11:40 a.m., 10/1/2025] +52 1 33 3800 6955: <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -251,6 +251,131 @@
     }
 
     setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
+[11:45 a.m., 10/1/2025] +52 1 33 3800 6955: <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TIS Sacrifice Portal</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background: radial-gradient(circle, #0a0f2c, #010411);
+      color: #e0e0e0;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.8rem;
+      color: #00f0ff;
+      text-shadow: 0 0 15px #00f0ff, 0 0 30px #0077ff;
+    }
+
+    header p {
+      font-size: 1.3rem;
+      color: #99e6ff;
+    }
+
+    .countdown {
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(15, 15, 40, 0.9);
+      border-radius: 15px;
+      box-shadow: 0 0 20px #00f0ff;
+    }
+
+    #timer {
+      font-size: 2.2rem;
+      color: #00f0ff;
+    }
+
+    button {
+      background: #00c3ff;
+      color: #fff;
+      font-size: 1.2rem;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #0077ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>TIS Sacrifice Portal</h1>
+      <p>Conéctate para participar en el sacrificio.</p>
+    </header>
+
+    <button id="connect-wallet">Conectar Wallet</button>
+
+    <div class="countdown">
+      <h2>Cuenta regresiva para el sacrificio</h2>
+      <div id="timer">Cargando...</div>
+    </div>
+  </div>
+
+  <script>
+    const connectWalletButton = document.getElementById("connect-wallet");
+    const timerElement = document.getElementById("timer");
+
+    const startTimestamp = 1704715200; // 8 Enero 2025, 12:00 PM UTC
+
+    let userAddress = null;
+
+    // Conectar MetaMask
+    async function connectWallet() {
+      if (typeof window.ethereum !== "undefined") {
+        try {
+          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+          userAddress = accounts[0];
+          connectWalletButton.textContent = Conectado: ${userAddress.substring(0, 6)}...${userAddress.slice(-4)};
+          connectWalletButton.disabled = true;
+        } catch (error) {
+          alert("Error al conectar MetaMask: " + error.message);
+        }
+      } else {
+        alert("MetaMask no está instalado. Por favor, instálalo para continuar.");
+      }
+    }
+
+    connectWalletButton.addEventListener("click", connectWallet);
+
+    // Contador
+    function updateCountdown() {
+      const now = Math.floor(Date.now() / 1000);
+      const timeLeft = startTimestamp - now;
+
+      if (timeLeft > 0) {
+        const days = Math.floor(timeLeft / 86400);
+        const hours = Math.floor((timeLeft % 86400) / 3600);
+        const minutes = Math.floor((timeLeft % 3600) / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = ${days} días, ${hours} horas, ${minutes} minutos, ${seconds} segundos;
+      } else {
+        timerElement.textContent = "El sacrificio ha iniciado.";
+      }
+    }
+
+    // Actualizar el contador cada segundo
+    setInterval(updateCountdown, 1000);
+    updateCountdown(); // Ejecutar inmediatamente al cargar
   </script>
 </body>
 </html>
